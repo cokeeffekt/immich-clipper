@@ -1,0 +1,35 @@
+[
+  {
+    "id": "fast-clip",
+    "name": "Fast Clip",
+    "description": "Stream copy — no re-encoding, instant",
+    "builtin": true,
+    "mode": "copy"
+  },
+  {
+    "id": "instagram-reel",
+    "name": "Instagram Reel",
+    "description": "1080×1920 H.264 portrait crop",
+    "builtin": true,
+    "mode": "encode",
+    "cropW": 1080,
+    "cropH": 1920,
+    "scaleW": 1080,
+    "scaleH": 1920,
+    "crf": 23,
+    "encodePreset": "fast"
+  },
+  {
+    "id": "square-post",
+    "name": "Square Post",
+    "description": "1080×1080 center crop",
+    "builtin": true,
+    "mode": "encode",
+    "cropW": "ih",
+    "cropH": "ih",
+    "scaleW": 1080,
+    "scaleH": 1080,
+    "crf": 23,
+    "encodePreset": "fast"
+  }
+]

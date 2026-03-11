@@ -1,0 +1,20 @@
+services:
+  immich-clipper:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ${MEDIA_SOURCE_DIR}:/media/source:ro
+    restart: unless-stopped
+
+    # To connect to Immich on the same Docker host, add:
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    # and set IMMICH_URL=http://host.docker.internal:2283/api
+
+    # To connect to Immich in the same Compose stack, add:
+    # networks:
+    #   - immich_default
+    # and set IMMICH_URL=http://immich-server:2283/api
