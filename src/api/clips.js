@@ -16,16 +16,26 @@ export async function handleListClips(req, reply) {
 }
 
 export async function handleAddClip(req, reply) {
-  const { sourcePath, startTime, endTime, presetId, label, album } = req.body || {}
+  const { type, sourcePath, startTime, endTime, presetId, label, album } = req.body || {}
+  const jobType = type || 'clip'
 
-  if (!sourcePath || startTime == null || endTime == null || !presetId) {
-    return reply.status(400).send({ error: 'sourcePath, startTime, endTime, presetId required' })
-  }
-  if (typeof startTime !== 'number' || typeof endTime !== 'number') {
-    return reply.status(400).send({ error: 'startTime and endTime must be numbers' })
-  }
-  if (endTime <= startTime) {
-    return reply.status(400).send({ error: 'endTime must be greater than startTime' })
+  if (jobType === 'screenshot') {
+    if (!sourcePath || startTime == null) {
+      return reply.status(400).send({ error: 'sourcePath and startTime required for screenshot' })
+    }
+    if (typeof startTime !== 'number') {
+      return reply.status(400).send({ error: 'startTime must be a number' })
+    }
+  } else {
+    if (!sourcePath || startTime == null || endTime == null || !presetId) {
+      return reply.status(400).send({ error: 'sourcePath, startTime, endTime, presetId required' })
+    }
+    if (typeof startTime !== 'number' || typeof endTime !== 'number') {
+      return reply.status(400).send({ error: 'startTime and endTime must be numbers' })
+    }
+    if (endTime <= startTime) {
+      return reply.status(400).send({ error: 'endTime must be greater than startTime' })
+    }
   }
 
   let absoluteSourcePath
@@ -37,10 +47,10 @@ export async function handleAddClip(req, reply) {
 
   const job = {
     id: randomUUID(),
+    type: jobType,
     sourcePath: absoluteSourcePath,
     startTime,
-    endTime,
-    presetId,
+    ...(jobType === 'clip' ? { endTime, presetId } : {}),
     label: label || '',
     album: album || '',
     status: 'pending',

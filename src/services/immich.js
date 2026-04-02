@@ -15,6 +15,7 @@ export async function uploadAsset(filePath, job) {
   const filename = basename(filePath)
   const fileSize = statSync(filePath).size
   const now = new Date().toISOString()
+  const isImage = filePath.endsWith('.jpg') || filePath.endsWith('.jpeg') || filePath.endsWith('.png')
 
   const form = new FormData()
   form.append('deviceAssetId', job.id)
@@ -23,7 +24,7 @@ export async function uploadAsset(filePath, job) {
   form.append('fileModifiedAt', now)
   form.append('assetData', createReadStream(filePath), {
     filename,
-    contentType: 'video/mp4',
+    contentType: isImage ? 'image/jpeg' : 'video/mp4',
     knownLength: fileSize,
   })
 

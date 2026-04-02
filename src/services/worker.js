@@ -1,6 +1,6 @@
 import { unlink } from 'fs/promises'
 import { saveQueue, getNextPending, updateJob } from './queue.js'
-import { runFfmpeg } from './ffmpeg.js'
+import { runFfmpeg, extractScreenshot } from './ffmpeg.js'
 import { uploadAsset, getOrCreateAlbum, addToAlbum } from './immich.js'
 import config from '../config.js'
 
@@ -17,7 +17,9 @@ async function processNext() {
   saveQueue()
 
   try {
-    const outputPath = await runFfmpeg(job)
+    const outputPath = job.type === 'screenshot'
+      ? await extractScreenshot(job)
+      : await runFfmpeg(job)
 
     const assetId = await uploadAsset(outputPath, job)
 

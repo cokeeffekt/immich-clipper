@@ -83,7 +83,7 @@ export function editorPage() {
         </template>
       </div>
 
-      <!-- Marker buttons -->
+      <!-- Marker buttons + frame controls -->
       <div class="flex flex-wrap items-center gap-3">
         <button @click="markStart()" class="px-4 py-2 bg-green-900 hover:bg-green-800 text-green-100 rounded-lg text-sm font-medium transition-colors">▶ Mark Start</button>
         <span class="text-sm tabular-nums" :class="startTime !== null ? 'text-green-400' : 'text-gray-600'" x-text="startTime !== null ? fmtTime(startTime) : '--:--'"></span>
@@ -97,7 +97,12 @@ export function editorPage() {
           <span class="text-xs text-gray-500" x-text="'(' + fmtTime(endTime - startTime) + ')'"></span>
         </template>
 
-        <span class="ml-auto text-sm tabular-nums text-gray-500" x-text="fmtTime(currentTime)"></span>
+        <span class="ml-auto flex items-center gap-1">
+          <button @click="stepFrame(-1)" class="px-2 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors" title="Previous frame">◀</button>
+          <button @click="stepFrame(1)" class="px-2 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors" title="Next frame">▶</button>
+          <button @click="takeScreenshot()" :disabled="adding" class="px-3 py-2 bg-amber-800 hover:bg-amber-700 disabled:opacity-40 text-amber-100 rounded-lg text-sm font-medium transition-colors ml-1" title="Screenshot current frame">📷</button>
+          <span class="text-sm tabular-nums text-gray-500 ml-1" x-text="fmtTime(currentTime)"></span>
+        </span>
       </div>
 
       <!-- Form fields + action button -->

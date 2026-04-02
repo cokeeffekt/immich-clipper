@@ -235,6 +235,45 @@ function editor() {
       this.$refs.video.pause()
     },
 
+    stepFrame(direction) {
+      const video = this.$refs.video
+      video.pause()
+      // Assume 30fps; 1/30 ≈ 0.0334s per frame
+      const step = direction / 30
+      video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + step))
+    },
+
+    async takeScreenshot() {
+      if (!this.videoPath) return
+      this.adding = true
+      this.addError = null
+
+      if (this.selectedAlbum) localStorage.setItem('lastAlbum', this.selectedAlbum)
+
+      try {
+        const res = await fetch('/api/clips', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'screenshot',
+            sourcePath: this.videoPath,
+            startTime: this.$refs.video.currentTime,
+            label: this.clipLabel || '',
+            album: this.selectedAlbum || undefined,
+          }),
+        })
+        if (res.ok) {
+          const job = await res.json()
+          this.allJobs.push(job)
+        } else {
+          this.addError = 'Failed to queue screenshot'
+        }
+      } catch {
+        this.addError = 'Failed to queue screenshot'
+      }
+      this.adding = false
+    },
+
     async queueAll() {
       if (this.drafts.length === 0) return
       this.syncFormToDraft()

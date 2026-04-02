@@ -3,6 +3,37 @@ import path from 'path'
 import config from '../config.js'
 import { getPresetById } from './presets.js'
 
+export async function extractScreenshot(job) {
+  const outputPath = path.join(config.workDir, `${job.id}.jpg`)
+  const args = [
+    '-y',
+    '-ss', String(job.startTime),
+    '-i', job.sourcePath,
+    '-frames:v', '1',
+    '-q:v', '1',
+    outputPath,
+  ]
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn('ffmpeg', args)
+
+    let stderr = ''
+    proc.stderr.on('data', d => {
+      stderr += d
+      process.stdout.write(d)
+    })
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        return reject(new Error(`FFmpeg screenshot failed (code ${code}): ${stderr.slice(-500)}`))
+      }
+      resolve(outputPath)
+    })
+
+    proc.on('error', reject)
+  })
+}
+
 export async function runFfmpeg(job) {
   const preset = await getPresetById(job.presetId)
   if (!preset) throw new Error(`Unknown preset: ${job.presetId}`)
